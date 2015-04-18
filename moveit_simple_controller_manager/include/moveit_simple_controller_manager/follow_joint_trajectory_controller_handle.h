@@ -90,9 +90,11 @@ protected:
   void controllerDoneCallback(const actionlib::SimpleClientGoalState& state,
                               const control_msgs::FollowJointTrajectoryResultConstPtr& result)
   {
-    // Output custom error message for FollowJointTrajectoryResult if necessary
-    switch( result->error_code )
-    {
+
+    if (result.get()){
+      // Output custom error message for FollowJointTrajectoryResult if necessary
+      switch( result->error_code )
+      {
       case control_msgs::FollowJointTrajectoryResult::INVALID_GOAL:
         ROS_WARN_STREAM("Controller " << name_ << " failed with error code INVALID_GOAL");
         break;
@@ -108,6 +110,9 @@ protected:
       case control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED:
         ROS_WARN_STREAM("Controller " << name_ << " failed with error code GOAL_TOLERANCE_VIOLATED");
         break;
+      }
+    }else{
+      ROS_ERROR("Result null pointer! This would crash without mods to simple controller manager!");
     }
 
     finishControllerExecution(state);
